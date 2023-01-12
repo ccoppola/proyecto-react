@@ -1,0 +1,25 @@
+.nav-menu{
+    list-style: none;
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    width: 100%;
+    margin: 0;  
+    height: 90px;
+    background-color: rgb(93, 181, 252);
+    margin-bottom: 45px;
+  }
+  
+  .nav-link{
+    font-family: 'Roboto', sans-serif;
+    font-weight: 500;
+    font-size: 1.3em;
+    color:rgb(0, 0, 0);
+    text-decoration: none;
+  }
+  
+
+  .nav-link:hover{
+    font-weight: 600;
+    color:rgb(251, 251, 251)
+  }

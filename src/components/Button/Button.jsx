@@ -1,9 +1,15 @@
-import React from 'react'
-import "./button.css"
+import React from "react";
+import styles from "./button.module.css";
 
-const Button = (props) => {
+export default function Button(props) {
+
+  let styleButton = {
+    padding: props.padding,
+  };
+
   return (
-    <button className='buttonComprar'>{props.texto}</button>
-  )
+    <button onClick={props.onClick} style={styleButton} className={styles.btn}>
+      {props.children}
+    </button>
+  );
 }
-export default Button
