@@ -1,31 +1,55 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect,useContext } from "react";
 import { useParams } from "react-router-dom";
-import { getClothes } from "../../service/mockService";
-import ItemDetail from "./ItemDetail";
+import ItemDetail from "./ItemDetail/ItemDetail";
+import "./itemDetailContainer.css"
+import ButtonCount from "../Buttons/ButtonCount/ButtonCount";
+import MyButton from "../Buttons/MyButton/MyButton";
+import { cartContext } from "../../storage/cartContext";
+import Loader from "../Loader/Loader";
+import { Link } from "react-router-dom";
+import { getItemByID } from "../../service/firebase";
 
-function ItemDetailContainer() {
-  const [clothe, setClothe] = useState({ title: "Cargando", price: "--,--" });
+function  ItemDetailContainer() {
+    const [product, setProduct] = useState([]);
+    const [Loading, setLoading] = useState(true);
+    const [isEmpty, setIsEmpty] = useState(true);
+    const itemID = useParams().IDproducto;
+    const {addToCart} = useContext(cartContext);
 
-  let params = useParams();
-
-
-  useEffect(() => {
-    getClothes(params.itemid)
+useEffect(() => {
+      getItemByID(itemID)
       .then((respuesta) => {
-        setClothe(respuesta);
-      })
-      .catch((error) => alert(error));
-  }, []);
+          setProduct(respuesta);
+          setLoading(false);
+    })
+    .catch((error) => alert("Item no encontrado"));
+    }, [itemID]); 
 
-  return (
-    <ItemDetail
-      title={clothe.title}
-      imgurl={clothe.imgurl}
-      category={clothe.category}
-      price={clothe.price}
-      detail={clothe.detail}
-    />
-  );
-}
-export default ItemDetailContainer;
-
+    function handleAddToCart(valor){
+      addToCart(product,valor);
+      setIsEmpty(false);
+    }
+    
+    return (
+    <>
+      {
+        Loading ? <Loader/> :
+        <div className="itemDetail">
+          <ItemDetail producto ={product}/>
+          {isEmpty ? 
+            <ButtonCount stock = {product.stock} finishCount={handleAddToCart}/> 
+            : 
+           <Link to={"/cart"}>
+            <MyButton
+              text = "Ir al carrito..."
+              color="btn"
+              />
+           </Link>
+          }   
+        </div>
+      }
+    </>
+    );
+  }
+  
+  export default ItemDetailContainer;

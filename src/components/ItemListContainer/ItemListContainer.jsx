@@ -1,38 +1,37 @@
-import { useState, useEffect } from "react";
-import Flex from "../Flex/Flex";
-import obtenerProductos, {
-  getClotheByCategory,
-} from "../../service/mockService";
+import React, { useState, useEffect } from "react";
+import ItemList from "./ItemList/ItemList";
 import { useParams } from "react-router-dom";
-import ItemProductos from "./ItemProductos";
+import Loader from "../Loader/Loader";
+import { getItems, getItemsByCategory } from "../../service/firebase";
 
 function ItemListContainer() {
-  const [ropa, setRopa] = useState([]);
-  let { categoryid } = useParams();
-
-  console.log("Renderizmos ILC");
+  const [products, setProducts] = useState([]);
+  const [Loading, setLoading] = useState(true);
+  const categoria = useParams().categoria;
 
   useEffect(() => {
-    if (!categoryid) {
-      obtenerProductos()
+    if (categoria === undefined) {
+      getItems()
         .then((respuesta) => {
-          setRopa(respuesta);
-        })
-        .catch((error) => alert(error));
-    } else {
-      getClotheByCategory(categoryid).then((respuesta) => {
-        setRopa(respuesta);
+          setProducts(respuesta);
+          setLoading(false);
+        });
+    }
+    else {
+      getItemsByCategory(categoria)
+      .then((productosFiltrados) => {
+        setProducts(productosFiltrados)
+        setLoading(false);
       });
     }
-  }, [categoryid]);
+  }, [categoria]);
 
-  return (
-    <Flex>
-      {ropa.map((itemIterado) => {
-        return <ItemProductos key={itemIterado.id} item={itemIterado} />;
-      })}
-    </Flex>
-  );
+  if(Loading) return <Loader/>;
+
+  return <ItemList productos={products} />;
+
+  
+
 }
 
 export default ItemListContainer;
